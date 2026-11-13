@@ -26,6 +26,7 @@ Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
     // Module 4: Metal Rates
     Route::get('/rates', [MetalRateController::class, 'index'])->name('rates.index');
     Route::post('/rates', [MetalRateController::class, 'store'])->name('rates.store');
+    Route::post('/rates/sync', [MetalRateController::class, 'syncLiveRates'])->name('rates.sync');
     Route::post('/rates/{metalRate}/approve', [MetalRateController::class, 'approve'])->name('rates.approve');
 
     // Modules 2, 3, 13, 14, 15: Products, Inventory, Labels, Stones, Hallmarking

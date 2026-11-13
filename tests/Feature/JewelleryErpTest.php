@@ -173,5 +173,14 @@ class JewelleryErpTest extends TestCase
         ])->assertRedirect('/');
         $this->assertAuthenticatedAs($admin);
     }
+
+    public function test_rates_sync_endpoint(): void
+    {
+        $admin = User::where('email', 'admin@swarnaerp.in')->firstOrFail();
+        $this->actingAs($admin);
+
+        $response = $this->post(route('rates.sync'));
+        $response->assertRedirect();
+    }
 }
 

@@ -4,6 +4,22 @@
 
 @section('content')
 <div class="space-y-6">
+    <!-- Top Action Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-amber-500/10 via-yellow-500/5 to-transparent border border-amber-200/80 rounded-xl p-4">
+        <div>
+            <h2 class="text-sm font-bold text-slate-900">Today's Live Showroom Board Rates</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Rates used across POS billing, jewellery valuation, and old gold exchange.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <form action="{{ route('rates.sync') }}" method="POST">
+                @csrf
+                <button type="submit" class="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs flex items-center gap-1.5 transition">
+                    <span>⚡</span> Sync Live Market Rates (API)
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Live Rate Cards -->
     <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
         @foreach($currentRates as $label => $val)
