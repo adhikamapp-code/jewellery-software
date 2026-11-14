@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
-**SwarnaERP** is an enterprise-grade Jewellery Showroom & Chain Management System crafted specifically for the Indian jewellery retail ecosystem. It provides end-to-end management spanning live bullion rates, item-level BIS HUID tracking, specialized jewellery POS with dynamic wastage & making charges, old gold exchange valuation, karigar (artisan) job-work manufacturing, 11+1 gold savings schemes, multi-branch operations, and GST accounting.
+**JewelleryERP** is an enterprise-grade Jewellery Showroom & Chain Management System crafted specifically for the Indian jewellery retail ecosystem. It provides end-to-end management spanning live bullion rates, item-level BIS HUID tracking, specialized jewellery POS with dynamic wastage & making charges, old gold exchange valuation, karigar (artisan) job-work manufacturing, 11+1 gold savings schemes, multi-branch operations, and GST accounting.
 
 ---
 
