@@ -90,15 +90,22 @@
                         <div class="flex justify-between font-bold"><span>{{ $m->job_no }}</span><span class="text-amber-700">{{ $m->stage }}</span></div>
                         <div class="font-medium mt-0.5">{{ $m->design_name }} ({{ $m->purity }})</div>
                         <div class="text-slate-500">Issued: {{ $m->issued_weight }}g · Artisan: {{ $m->artisan->name ?? '-' }}</div>
-                        <form action="{{ route('workshop.mfg.stage', $m) }}" method="POST" class="mt-2 flex gap-1">
-                            @csrf
-                            <select name="stage" class="border rounded px-1.5 py-1 flex-1">
-                                @foreach(['metal_issued','stone_setting','polishing','finishing','qc','completed'] as $st)
-                                    <option value="{{ $st }}" {{ $m->stage === $st ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $st)) }}</option>
-                                @endforeach
-                            </select>
-                            <button class="bg-slate-800 text-white px-2 py-1 rounded">Update</button>
-                        </form>
+                        <div class="mt-2 flex items-center gap-1">
+                            <form action="{{ route('workshop.mfg.stage', $m) }}" method="POST" class="flex gap-1 flex-1">
+                                @csrf
+                                <select name="stage" class="border rounded px-1.5 py-1 flex-1">
+                                    @foreach(['metal_issued','stone_setting','polishing','finishing','qc','completed'] as $st)
+                                        <option value="{{ $st }}" {{ $m->stage === $st ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $st)) }}</option>
+                                    @endforeach
+                                </select>
+                                <button class="bg-slate-800 text-white px-2 py-1 rounded">Update</button>
+                            </form>
+                            <form action="{{ route('workshop.mfg.destroy', $m) }}" method="POST" class="inline" onsubmit="return confirm('Delete manufacturing order {{ $m->job_no }}?');">
+                                @csrf
+                                @method('DELETE')
+                                <button class="text-rose-600 hover:underline px-1 py-1">Delete</button>
+                            </form>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -112,15 +119,22 @@
                         <div class="flex justify-between font-bold"><span>{{ $co->order_no }}</span><span class="text-amber-700 uppercase">{{ $co->status }}</span></div>
                         <div class="font-medium mt-0.5">{{ $co->title }}</div>
                         <div class="text-slate-500">{{ $co->customer->name ?? '' }} · Est: ₹{{ number_format($co->estimated_amount, 0) }} (Adv: ₹{{ number_format($co->advance_paid, 0) }})</div>
-                        <form action="{{ route('workshop.custom.status', $co) }}" method="POST" class="mt-2 flex gap-1">
-                            @csrf
-                            <select name="status" class="border rounded px-1.5 py-1 flex-1">
-                                @foreach(['pending_approval','approved','in_production','ready','delivered','cancelled'] as $st)
-                                    <option value="{{ $st }}" {{ $co->status === $st ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $st)) }}</option>
-                                @endforeach
-                            </select>
-                            <button class="bg-slate-800 text-white px-2 py-1 rounded">Save</button>
-                        </form>
+                        <div class="mt-2 flex items-center gap-1">
+                            <form action="{{ route('workshop.custom.status', $co) }}" method="POST" class="flex gap-1 flex-1">
+                                @csrf
+                                <select name="status" class="border rounded px-1.5 py-1 flex-1">
+                                    @foreach(['pending_approval','approved','in_production','ready','delivered','cancelled'] as $st)
+                                        <option value="{{ $st }}" {{ $co->status === $st ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $st)) }}</option>
+                                    @endforeach
+                                </select>
+                                <button class="bg-slate-800 text-white px-2 py-1 rounded">Save</button>
+                            </form>
+                            <form action="{{ route('workshop.custom.destroy', $co) }}" method="POST" class="inline" onsubmit="return confirm('Delete custom order {{ $co->order_no }}?');">
+                                @csrf
+                                @method('DELETE')
+                                <button class="text-rose-600 hover:underline px-1 py-1">Delete</button>
+                            </form>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -134,15 +148,22 @@
                         <div class="flex justify-between font-bold"><span>{{ $rj->job_no }}</span><span class="text-emerald-700 uppercase">{{ $rj->status }}</span></div>
                         <div class="font-medium mt-0.5">{{ $rj->item_description }}</div>
                         <div class="text-slate-500">{{ $rj->customer->name ?? '' }} · Wt: {{ $rj->receiving_weight }}g · ₹{{ number_format($rj->repair_charges, 0) }}</div>
-                        <form action="{{ route('workshop.repair.status', $rj) }}" method="POST" class="mt-2 flex gap-1">
-                            @csrf
-                            <select name="status" class="border rounded px-1.5 py-1 flex-1">
-                                @foreach(['received','in_progress','qc','ready','delivered'] as $st)
-                                    <option value="{{ $st }}" {{ $rj->status === $st ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $st)) }}</option>
-                                @endforeach
-                            </select>
-                            <button class="bg-slate-800 text-white px-2 py-1 rounded">Save</button>
-                        </form>
+                        <div class="mt-2 flex items-center gap-1">
+                            <form action="{{ route('workshop.repair.status', $rj) }}" method="POST" class="flex gap-1 flex-1">
+                                @csrf
+                                <select name="status" class="border rounded px-1.5 py-1 flex-1">
+                                    @foreach(['received','in_progress','qc','ready','delivered'] as $st)
+                                        <option value="{{ $st }}" {{ $rj->status === $st ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $st)) }}</option>
+                                    @endforeach
+                                </select>
+                                <button class="bg-slate-800 text-white px-2 py-1 rounded">Save</button>
+                            </form>
+                            <form action="{{ route('workshop.repair.destroy', $rj) }}" method="POST" class="inline" onsubmit="return confirm('Delete repair job {{ $rj->job_no }}?');">
+                                @csrf
+                                @method('DELETE')
+                                <button class="text-rose-600 hover:underline px-1 py-1">Delete</button>
+                            </form>
+                        </div>
                     </div>
                 @endforeach
             </div>

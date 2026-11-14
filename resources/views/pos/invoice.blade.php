@@ -17,7 +17,7 @@
 
     <div class="bg-white border border-slate-200 rounded-xl p-6 mx-auto {{ $format === 'thermal' ? 'max-w-[340px] text-xs' : 'max-w-4xl text-sm' }}">
         <div class="text-center border-b border-slate-200 pb-4 mb-4">
-            <div class="text-xl font-bold text-slate-900">SWARNAERP JEWELLERS</div>
+            <div class="text-xl font-bold text-slate-900">{{ strtoupper($businessName) }}</div>
             <div class="text-xs text-slate-500">{{ $invoice->branch->name }} · {{ $invoice->branch->address }}, {{ $invoice->branch->city }}</div>
             <div class="text-xs text-slate-500">GSTIN: {{ $invoice->branch->gstin }} · Ph: {{ $invoice->branch->phone }}</div>
             <div class="mt-2 inline-block px-3 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold text-xs uppercase">{{ $invoice->invoice_type }} Invoice</div>

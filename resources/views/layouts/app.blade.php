@@ -16,8 +16,8 @@
                 ✦
             </div>
             <div>
-                <div class="font-bold text-white tracking-tight">SwarnaERP</div>
-                <div class="text-[11px] text-amber-400/90 uppercase tracking-wider">Jewellery Suite</div>
+                <div class="font-bold text-white tracking-tight truncate max-w-[150px]" title="{{ $businessName }}">{{ $businessName }}</div>
+                <div class="text-[11px] text-amber-400/90 uppercase tracking-wider truncate max-w-[150px]" title="{{ $businessTagline }}">{{ $businessTagline }}</div>
             </div>
         </div>
 
@@ -93,6 +93,9 @@
                 </a>
                 <a href="{{ route('admin.reports') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.reports') ? 'bg-amber-500/15 text-amber-300 font-medium' : 'hover:bg-slate-800/70' }}">
                     <span>📈</span> BI Reports
+                </a>
+                <a href="{{ route('settings.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('settings.*') ? 'bg-amber-500/15 text-amber-300 font-medium' : 'hover:bg-slate-800/70' }}">
+                    <span>⚙️</span> Showroom Settings
                 </a>
             </div>
         </nav>

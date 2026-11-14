@@ -67,6 +67,19 @@ class AdminBranchController extends Controller
         return back()->with('success', 'Employee registered.');
     }
 
+    public function destroyStaff(User $user)
+    {
+        if (Auth::id() === $user->id) {
+            return back()->withErrors(['staff' => 'Cannot delete your own active account.']);
+        }
+
+        $name = $user->name;
+        $user->delete();
+        AuditService::log('Staff', 'delete', "Deleted employee {$name}");
+
+        return back()->with('success', "Employee {$name} deleted successfully.");
+    }
+
     public function markAttendance(Request $request)
     {
         $data = $request->validate([
@@ -114,6 +127,19 @@ class AdminBranchController extends Controller
 
         Branch::create($data);
         return back()->with('success', 'Showroom branch created.');
+    }
+
+    public function destroyBranch(Branch $branch)
+    {
+        if ($branch->is_head_office) {
+            return back()->withErrors(['branch' => 'Head Office branch cannot be deleted.']);
+        }
+
+        $name = $branch->name;
+        $branch->delete();
+        AuditService::log('Branch', 'delete', "Deleted branch {$name}");
+
+        return back()->with('success', "Branch {$name} deleted successfully.");
     }
 
     public function securityAndApprovals()

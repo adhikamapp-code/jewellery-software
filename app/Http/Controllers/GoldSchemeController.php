@@ -6,6 +6,7 @@ use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\GoldScheme;
 use App\Models\SchemeInstallment;
+use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -77,6 +78,16 @@ class GoldSchemeController extends Controller
         }
 
         return back()->with('success', "Installment #{$installment->installment_no} collected.");
+    }
+
+    public function destroy(GoldScheme $scheme)
+    {
+        $no = $scheme->scheme_no;
+        $scheme->installments()->delete();
+        $scheme->delete();
+
+        AuditService::log('GoldScheme', 'delete', "Deleted scheme {$no}");
+        return back()->with('success', "Gold scheme {$no} deleted successfully.");
     }
 }
 

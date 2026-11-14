@@ -277,5 +277,31 @@ class PosController extends Controller
         AuditService::log('SalesReturn', 'create', "Registered {$data['return_type']} {$ret->return_no}", $ret);
         return back()->with('success', "Sales return {$ret->return_no} recorded.");
     }
+
+    public function destroyInvoice(Invoice $invoice)
+    {
+        $invNo = $invoice->invoice_no;
+        foreach ($invoice->items as $item) {
+            if ($item->inventory_item_id) {
+                InventoryItem::where('id', $item->inventory_item_id)->update(['status' => 'available']);
+            }
+        }
+        $invoice->items()->delete();
+        $invoice->payments()->delete();
+        $invoice->modifications()->delete();
+        $invoice->delete();
+
+        AuditService::log('POS', 'delete_invoice', "Deleted invoice {$invNo}");
+        return back()->with('success', "Invoice {$invNo} deleted and stock restored.");
+    }
+
+    public function destroyReturn(SalesReturn $salesReturn)
+    {
+        $retNo = $salesReturn->return_no;
+        $salesReturn->delete();
+
+        AuditService::log('SalesReturn', 'delete', "Deleted return {$retNo}");
+        return back()->with('success', "Sales return {$retNo} deleted.");
+    }
 }
 

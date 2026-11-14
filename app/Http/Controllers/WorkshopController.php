@@ -137,5 +137,32 @@ class WorkshopController extends Controller
         $repairJob->update($data);
         return back()->with('success', "Repair {$repairJob->job_no} updated.");
     }
+
+    public function destroyManufacturing(ManufacturingOrder $order)
+    {
+        $jobNo = $order->job_no;
+        $order->delete();
+
+        AuditService::log('Manufacturing', 'delete', "Deleted manufacturing order {$jobNo}");
+        return back()->with('success', "Manufacturing order {$jobNo} deleted.");
+    }
+
+    public function destroyCustomOrder(CustomOrder $order)
+    {
+        $orderNo = $order->order_no;
+        $order->delete();
+
+        AuditService::log('CustomOrder', 'delete', "Deleted custom order {$orderNo}");
+        return back()->with('success', "Custom order {$orderNo} deleted.");
+    }
+
+    public function destroyRepair(RepairJob $repairJob)
+    {
+        $jobNo = $repairJob->job_no;
+        $repairJob->delete();
+
+        AuditService::log('RepairJob', 'delete', "Deleted repair job {$jobNo}");
+        return back()->with('success', "Repair job {$jobNo} deleted.");
+    }
 }
 

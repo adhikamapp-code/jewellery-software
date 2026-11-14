@@ -250,5 +250,194 @@ class JewelleryErpTest extends TestCase
             'status' => 'available',
         ]);
     }
+
+    public function test_settings_page_and_business_name_update(): void
+    {
+        $admin = User::where('email', 'admin@swarnaerp.in')->firstOrFail();
+        $this->actingAs($admin);
+
+        $getRes = $this->get('/settings');
+        $getRes->assertStatus(200);
+
+        $postRes = $this->post('/settings', [
+            'business_name' => 'Royal Heritage Jewellers',
+            'tagline' => 'Handcrafted Elegance Since 1985',
+            'phone' => '+91 98765 43210',
+            'gstin' => '27AABCR9999Z1Z5',
+            'address' => '45 Jewellers Lane, Mumbai',
+        ]);
+
+        $postRes->assertRedirect();
+        $this->assertEquals('Royal Heritage Jewellers', \App\Models\Setting::get('business_name'));
+
+        $dashRes = $this->get('/');
+        $dashRes->assertSee('Royal Heritage Jewellers');
+    }
+
+    public function test_all_roles_have_admin_access(): void
+    {
+        $sales = User::where('role', 'salesperson')->firstOrFail();
+        $this->assertTrue($sales->hasRole('admin'));
+        $this->assertTrue($sales->hasRole('manager'));
+        $this->assertTrue($sales->hasRole(['admin', 'manager']));
+
+        $this->actingAs($sales);
+        $res = $this->get('/security');
+        $res->assertStatus(200);
+
+        $resSettings = $this->get('/settings');
+        $resSettings->assertStatus(200);
+    }
+
+    public function test_delete_operations_across_all_modules(): void
+    {
+        $admin = User::where('email', 'admin@swarnaerp.in')->firstOrFail();
+        $this->actingAs($admin);
+
+        // Delete Customer
+        $customer = Customer::create([
+            'customer_code' => 'TEST-CUST',
+            'name' => 'Delete Me Customer',
+            'phone' => '9999900000',
+            'group_tier' => 'standard',
+        ]);
+        $this->delete(route('crm.customers.destroy', $customer))->assertRedirect();
+        $this->assertDatabaseMissing('customers', ['id' => $customer->id]);
+
+        // Delete Old Gold Purchase
+        $branch = Branch::firstOrFail();
+        $og = \App\Models\OldGoldPurchase::create([
+            'receipt_no' => 'OG-DEL-1',
+            'branch_id' => $branch->id,
+            'item_description' => 'Scrap Gold Ring',
+            'gross_weight' => 5.0,
+            'net_weight' => 5.0,
+            'tested_purity' => '22K',
+            'purity_pct' => 91.6,
+            'fine_gold_weight' => 4.58,
+            'applied_rate' => 7500,
+            'valuation_amount' => 34350,
+            'settlement_type' => 'cash',
+            'customer_declaration' => true,
+            'status' => 'pending_approval',
+        ]);
+        $this->delete(route('old_gold.destroy', $og))->assertRedirect();
+        $this->assertDatabaseMissing('old_gold_purchases', ['id' => $og->id]);
+
+        // Delete Gold Scheme
+        $scheme = \App\Models\GoldScheme::create([
+            'scheme_no' => 'SCH-DEL-1',
+            'branch_id' => $branch->id,
+            'customer_id' => Customer::first()->id,
+            'scheme_name' => 'Test Scheme',
+            'monthly_amount' => 1000,
+            'duration_months' => 6,
+            'bonus_amount' => 1000,
+            'total_paid' => 0,
+            'start_date' => now(),
+            'maturity_date' => now()->addMonths(6),
+            'status' => 'active',
+        ]);
+        $this->delete(route('schemes.destroy', $scheme))->assertRedirect();
+        $this->assertDatabaseMissing('gold_schemes', ['id' => $scheme->id]);
+
+        // Delete Diamond Stone
+        $stone = \App\Models\DiamondStone::create([
+            'stone_code' => 'STN-TEST-1',
+            'stone_type' => 'Diamond',
+            'carat_weight' => 0.5,
+            'cost_price' => 20000,
+            'selling_price' => 30000,
+            'status' => 'available',
+        ]);
+        $this->delete(route('stones.destroy', $stone))->assertRedirect();
+        $this->assertDatabaseMissing('diamond_stones', ['id' => $stone->id]);
+
+        // Delete Hallmark Record
+        $item = InventoryItem::first();
+        $hallmark = \App\Models\HallmarkRecord::create([
+            'inventory_item_id' => $item->id,
+            'center_name' => 'Test Center',
+            'dispatch_date' => now(),
+            'status' => 'dispatched',
+        ]);
+        $this->delete(route('hallmark.destroy', $hallmark))->assertRedirect();
+        $this->assertDatabaseMissing('hallmark_records', ['id' => $hallmark->id]);
+
+        // Delete Supplier and Purchase Invoice
+        $supplier = \App\Models\Supplier::create([
+            'name' => 'Delete Me Supplier',
+            'code' => 'SUP-TEST-1',
+            'category' => 'gold_supplier',
+        ]);
+        $pi = \App\Models\PurchaseInvoice::create([
+            'bill_no' => 'PUR-TEST-1',
+            'supplier_id' => $supplier->id,
+            'branch_id' => $branch->id,
+            'bill_date' => now(),
+            'metal_type' => 'Gold',
+            'purity' => '22K',
+            'metal_weight' => 50,
+            'total_amount' => 350000,
+            'paid_amount' => 0,
+            'status' => 'unpaid',
+        ]);
+        $this->delete(route('purchases.destroy', $pi))->assertRedirect();
+        $this->assertDatabaseMissing('purchase_invoices', ['id' => $pi->id]);
+        $this->delete(route('suppliers.destroy', $supplier))->assertRedirect();
+        $this->assertDatabaseMissing('suppliers', ['id' => $supplier->id]);
+
+        // Delete Workshop Orders
+        $mfg = \App\Models\ManufacturingOrder::create([
+            'job_no' => 'MFG-TEST-1',
+            'branch_id' => $branch->id,
+            'design_name' => 'Kada',
+            'metal_type' => 'Gold',
+            'purity' => '22K',
+            'issued_weight' => 25.0,
+            'stage' => 'metal_issued',
+            'status' => 'in_progress',
+        ]);
+        $this->delete(route('workshop.mfg.destroy', $mfg))->assertRedirect();
+        $this->assertDatabaseMissing('manufacturing_orders', ['id' => $mfg->id]);
+
+        $custom = \App\Models\CustomOrder::create([
+            'order_no' => 'ORD-TEST-1',
+            'branch_id' => $branch->id,
+            'customer_id' => Customer::first()->id,
+            'title' => 'Custom Necklace',
+            'metal_type' => 'Gold',
+            'purity' => '22K',
+            'estimated_weight' => 30.0,
+            'estimated_amount' => 240000,
+            'status' => 'in_production',
+        ]);
+        $this->delete(route('workshop.custom.destroy', $custom))->assertRedirect();
+        $this->assertDatabaseMissing('custom_orders', ['id' => $custom->id]);
+
+        $repair = \App\Models\RepairJob::create([
+            'job_no' => 'REP-TEST-1',
+            'branch_id' => $branch->id,
+            'customer_id' => Customer::first()->id,
+            'item_description' => 'Chain Soldering',
+            'receiving_weight' => 12.0,
+            'repair_charges' => 500,
+            'status' => 'received',
+        ]);
+        $this->delete(route('workshop.repair.destroy', $repair))->assertRedirect();
+        $this->assertDatabaseMissing('repair_jobs', ['id' => $repair->id]);
+
+        // Delete Staff
+        $staff = User::create([
+            'branch_id' => $branch->id,
+            'name' => 'Temporary Staff',
+            'email' => 'tempstaff@test.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('secret'),
+            'role' => 'salesperson',
+            'employee_code' => 'EMP-999',
+        ]);
+        $this->delete(route('admin.staff.destroy', $staff))->assertRedirect();
+        $this->assertDatabaseMissing('users', ['id' => $staff->id]);
+    }
 }
 

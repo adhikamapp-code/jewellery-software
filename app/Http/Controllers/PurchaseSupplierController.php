@@ -115,5 +115,24 @@ class PurchaseSupplierController extends Controller
 
         return back()->with('success', 'Supplier payment recorded.');
     }
+
+    public function destroySupplier(Supplier $supplier)
+    {
+        $name = $supplier->name;
+        $supplier->delete();
+
+        AuditService::log('Suppliers', 'delete', "Deleted supplier {$name}");
+        return back()->with('success', "Supplier {$name} deleted successfully.");
+    }
+
+    public function destroyPurchaseInvoice(PurchaseInvoice $purchaseInvoice)
+    {
+        $billNo = $purchaseInvoice->bill_no;
+        $purchaseInvoice->payments()->delete();
+        $purchaseInvoice->delete();
+
+        AuditService::log('Purchases', 'delete', "Deleted purchase bill {$billNo}");
+        return back()->with('success', "Purchase invoice {$billNo} deleted successfully.");
+    }
 }
 

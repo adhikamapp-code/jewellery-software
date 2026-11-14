@@ -82,9 +82,16 @@
             <div>
                 <h3 class="text-sm font-semibold text-slate-800 mb-2">📣 Recent Campaigns</h3>
                 @foreach($campaigns as $camp)
-                    <div class="text-xs py-1.5 border-b border-slate-100">
-                        <div class="font-semibold">{{ $camp->title }}</div>
-                        <div class="text-slate-500 uppercase">{{ $camp->channel }} · Sent to {{ $camp->sent_count }}</div>
+                    <div class="text-xs py-1.5 border-b border-slate-100 flex justify-between items-center">
+                        <div>
+                            <div class="font-semibold">{{ $camp->title }}</div>
+                            <div class="text-slate-500 uppercase">{{ $camp->channel }} · Sent to {{ $camp->sent_count }}</div>
+                        </div>
+                        <form action="{{ route('crm.campaigns.destroy', $camp) }}" method="POST" class="inline" onsubmit="return confirm('Delete campaign {{ $camp->title }}?');">
+                            @csrf
+                            @method('DELETE')
+                            <button class="text-[11px] text-rose-600 hover:underline ml-2">Delete</button>
+                        </form>
                     </div>
                 @endforeach
             </div>
@@ -110,6 +117,7 @@
                         <th class="px-3 py-2 text-right">Lifetime Value</th>
                         <th class="px-3 py-2 text-right">Loyalty Pts</th>
                         <th class="px-3 py-2 text-right">Outstanding</th>
+                        <th class="px-3 py-2 text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -124,6 +132,13 @@
                             <td class="px-3 py-2 text-right font-semibold">₹{{ number_format($c->invoices_sum_grand_total ?? 0, 0) }}</td>
                             <td class="px-3 py-2 text-right font-semibold text-emerald-700">{{ $c->loyalty_points }} pts</td>
                             <td class="px-3 py-2 text-right text-rose-600">₹{{ number_format($c->outstanding_balance, 0) }}</td>
+                            <td class="px-3 py-2 text-right whitespace-nowrap">
+                                <form action="{{ route('crm.customers.destroy', $c) }}" method="POST" class="inline" onsubmit="return confirm('Delete customer {{ $c->name }}?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-xs text-rose-600 hover:underline">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

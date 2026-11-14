@@ -10,5 +10,6 @@ class PurchaseInvoice extends Model
     protected function casts(): array { return ['bill_date' => 'date']; }
     public function supplier() { return $this->belongsTo(Supplier::class); }
     public function branch() { return $this->belongsTo(Branch::class); }
+    public function payments() { return $this->hasMany(SupplierPayment::class); }
 }
 

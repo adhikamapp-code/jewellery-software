@@ -339,5 +339,23 @@ class ProductInventoryController extends Controller
 
         return back()->with('success', 'Hallmark / HUID record saved.');
     }
+
+    public function destroyStone(DiamondStone $stone)
+    {
+        $code = $stone->stone_code;
+        $stone->delete();
+        AuditService::log('Stones', 'delete', "Deleted stone {$code}");
+
+        return back()->with('success', "Stone {$code} deleted.");
+    }
+
+    public function destroyHallmark(HallmarkRecord $hallmark)
+    {
+        $info = $hallmark->huid ?: "#{$hallmark->id}";
+        $hallmark->delete();
+        AuditService::log('Hallmark', 'delete', "Deleted hallmark record {$info}");
+
+        return back()->with('success', "Hallmark record {$info} deleted.");
+    }
 }
 

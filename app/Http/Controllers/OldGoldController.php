@@ -81,5 +81,14 @@ class OldGoldController extends Controller
 
         return back()->with('success', "{$oldGoldPurchase->receipt_no} transferred to {$request->refinery_name}.");
     }
+
+    public function destroy(OldGoldPurchase $oldGoldPurchase)
+    {
+        $rcpt = $oldGoldPurchase->receipt_no;
+        $oldGoldPurchase->delete();
+
+        AuditService::log('OldGold', 'delete', "Deleted old gold purchase {$rcpt}");
+        return back()->with('success', "Old gold record {$rcpt} deleted.");
+    }
 }
 

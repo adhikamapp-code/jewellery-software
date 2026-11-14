@@ -107,7 +107,7 @@
                             <td class="px-3 py-2 text-right">{{ number_format($p->net_weight, 3) }}g / <span class="text-amber-700 font-semibold">{{ number_format($p->fine_gold_weight, 3) }}g</span></td>
                             <td class="px-3 py-2 text-right font-bold">₹{{ number_format($p->valuation_amount, 2) }}</td>
                             <td class="px-3 py-2 text-center"><span class="px-2 py-0.5 rounded-full bg-slate-100">{{ ucfirst(str_replace('_', ' ', $p->status)) }}</span></td>
-                            <td class="px-3 py-2 text-right">
+                            <td class="px-3 py-2 text-right whitespace-nowrap">
                                 @if($p->status !== 'refinery_transferred')
                                     <form action="{{ route('old_gold.refinery', $p) }}" method="POST" class="inline-flex gap-1">
                                         @csrf
@@ -117,6 +117,11 @@
                                 @else
                                     <span class="text-emerald-700 font-medium">{{ $p->refinery_name }}</span>
                                 @endif
+                                <form action="{{ route('old_gold.destroy', $p) }}" method="POST" class="inline" onsubmit="return confirm('Delete old gold purchase {{ $p->receipt_no }}?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-[11px] text-rose-600 hover:underline ml-1.5">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach

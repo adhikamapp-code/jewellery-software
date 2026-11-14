@@ -43,6 +43,11 @@
                                         <button class="text-xs text-rose-600 hover:underline">Cancel</button>
                                     </form>
                                 @endif
+                                <form action="{{ route('pos.invoices.destroy', $inv) }}" method="POST" class="inline" onsubmit="return confirm('Delete invoice {{ $inv->invoice_no }}? This will restore stock.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-xs text-rose-700 font-medium hover:underline">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach
@@ -90,12 +95,19 @@
             <h3 class="text-sm font-semibold text-slate-800 mb-3">Recent Returns</h3>
             <div class="space-y-2 text-xs">
                 @forelse($returns as $ret)
-                    <div class="border-b border-slate-100 pb-2 flex justify-between">
+                    <div class="border-b border-slate-100 pb-2 flex justify-between items-center">
                         <div>
                             <div class="font-semibold">{{ $ret->return_no }} ({{ $ret->return_type }})</div>
                             <div class="text-slate-500">{{ $ret->invoice->invoice_no ?? '' }} · {{ $ret->reason }}</div>
                         </div>
-                        <div class="text-right font-semibold">₹{{ number_format($ret->refund_amount, 0) }}</div>
+                        <div class="text-right flex items-center gap-2">
+                            <span class="font-semibold">₹{{ number_format($ret->refund_amount, 0) }}</span>
+                            <form action="{{ route('pos.returns.destroy', $ret) }}" method="POST" class="inline" onsubmit="return confirm('Delete return record {{ $ret->return_no }}?');">
+                                @csrf
+                                @method('DELETE')
+                                <button class="text-[11px] text-rose-600 hover:underline">Delete</button>
+                            </form>
+                        </div>
                     </div>
                 @empty
                     <div class="text-slate-400">No returns recorded.</div>

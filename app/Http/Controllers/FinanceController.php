@@ -8,6 +8,7 @@ use App\Models\FinancialAccount;
 use App\Models\Invoice;
 use App\Models\PurchaseInvoice;
 use App\Models\Voucher;
+use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -79,6 +80,25 @@ class FinanceController extends Controller
 
         Expense::create($data + ['created_by' => Auth::id()]);
         return back()->with('success', 'Expense recorded.');
+    }
+
+    public function destroyVoucher(Voucher $voucher)
+    {
+        $vchNo = $voucher->voucher_no;
+        $voucher->delete();
+        AuditService::log('Finance', 'delete_voucher', "Deleted voucher {$vchNo}");
+
+        return back()->with('success', "Voucher {$vchNo} deleted.");
+    }
+
+    public function destroyExpense(Expense $expense)
+    {
+        $category = $expense->category;
+        $amount = $expense->amount;
+        $expense->delete();
+        AuditService::log('Finance', 'delete_expense', "Deleted expense {$category} (₹{$amount})");
+
+        return back()->with('success', "Expense {$category} (₹{$amount}) deleted.");
     }
 }
 

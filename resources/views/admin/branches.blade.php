@@ -32,9 +32,17 @@
                             <div class="font-bold text-slate-900">{{ $b->name }}</div>
                             <div class="text-xs text-slate-500">{{ $b->code }} · {{ $b->city }}, {{ $b->state }}</div>
                         </div>
-                        @if($b->is_head_office)
-                            <span class="px-2 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-800 font-bold">HEAD OFFICE</span>
-                        @endif
+                        <div class="flex items-center gap-2">
+                            @if($b->is_head_office)
+                                <span class="px-2 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-800 font-bold">HEAD OFFICE</span>
+                            @else
+                                <form action="{{ route('admin.branches.destroy', $b) }}" method="POST" class="inline" onsubmit="return confirm('Delete branch {{ $b->name }}?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-[11px] text-rose-600 hover:underline">Delete</button>
+                                </form>
+                            @endif
+                        </div>
                     </div>
                     <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-100 text-xs">
                         <div><div class="text-slate-400">Sales</div><div class="font-bold">₹{{ number_format($b->total_sales ?? 0, 0) }}</div></div>

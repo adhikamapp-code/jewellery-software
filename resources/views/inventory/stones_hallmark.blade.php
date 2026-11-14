@@ -45,6 +45,7 @@
                             <th class="px-2 py-2 text-left">Cert #</th>
                             <th class="px-2 py-2 text-right">Price</th>
                             <th class="px-2 py-2 text-center">Status</th>
+                            <th class="px-2 py-2 text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -55,6 +56,13 @@
                                 <td class="px-2 py-2">{{ $s->certification_lab }} {{ $s->certificate_no }}</td>
                                 <td class="px-2 py-2 text-right font-semibold">₹{{ number_format($s->selling_price, 0) }}</td>
                                 <td class="px-2 py-2 text-center"><span class="px-2 py-0.5 rounded-full bg-slate-100">{{ $s->status }}</span></td>
+                                <td class="px-2 py-2 text-right whitespace-nowrap">
+                                    <form action="{{ route('stones.destroy', $s) }}" method="POST" class="inline" onsubmit="return confirm('Delete diamond/gemstone {{ $s->stone_code }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="text-rose-600 hover:underline">Delete</button>
+                                    </form>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -102,6 +110,7 @@
                             <th class="px-2 py-2 text-left">Center</th>
                             <th class="px-2 py-2 text-left">HUID</th>
                             <th class="px-2 py-2 text-center">Status</th>
+                            <th class="px-2 py-2 text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -111,6 +120,13 @@
                                 <td class="px-2 py-2">{{ $h->center_name }}</td>
                                 <td class="px-2 py-2 font-mono font-bold text-amber-700">{{ $h->huid ?? '-' }}</td>
                                 <td class="px-2 py-2 text-center"><span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{{ ucfirst($h->status) }}</span></td>
+                                <td class="px-2 py-2 text-right whitespace-nowrap">
+                                    <form action="{{ route('hallmark.destroy', $h) }}" method="POST" class="inline" onsubmit="return confirm('Delete hallmark record #{{ $h->id }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="text-rose-600 hover:underline">Delete</button>
+                                    </form>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

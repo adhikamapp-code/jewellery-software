@@ -101,5 +101,23 @@ class CustomerCrmController extends Controller
 
         return back()->with('success', "Campaign '{$data['title']}' dispatched to {$audienceCount} customers.");
     }
+
+    public function destroyCustomer(Customer $customer)
+    {
+        $name = $customer->name;
+        $customer->delete();
+
+        AuditService::log('CRM', 'delete_customer', "Deleted customer {$name}");
+        return back()->with('success', "Customer {$name} deleted successfully.");
+    }
+
+    public function destroyCampaign(MarketingCampaign $campaign)
+    {
+        $title = $campaign->title;
+        $campaign->delete();
+
+        AuditService::log('CRM', 'delete_campaign', "Deleted campaign {$title}");
+        return back()->with('success', "Campaign {$title} deleted successfully.");
+    }
 }
 

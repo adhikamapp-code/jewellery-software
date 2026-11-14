@@ -34,6 +34,11 @@
                     <div class="text-right">
                         <div class="text-sm font-bold text-emerald-700">Paid: ₹{{ number_format($scheme->total_paid, 0) }}</div>
                         <div class="text-[11px] text-slate-400">Matures: {{ $scheme->maturity_date->format('d M Y') }}</div>
+                        <form action="{{ route('schemes.destroy', $scheme) }}" method="POST" class="inline" onsubmit="return confirm('Delete scheme {{ $scheme->scheme_no }} and all installment records?');">
+                            @csrf
+                            @method('DELETE')
+                            <button class="text-[11px] text-rose-600 hover:underline">Delete Scheme</button>
+                        </form>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
