@@ -439,5 +439,20 @@ class JewelleryErpTest extends TestCase
         $this->delete(route('admin.staff.destroy', $staff))->assertRedirect();
         $this->assertDatabaseMissing('users', ['id' => $staff->id]);
     }
+
+    public function test_live_metal_rates_sync_domestic_rates(): void
+    {
+        $admin = User::where('email', 'admin@swarnaerp.in')->firstOrFail();
+        $this->actingAs($admin);
+
+        $response = $this->post(route('rates.sync'), ['city' => 'guwahati']);
+        $response->assertRedirect();
+
+        $gold24 = \App\Models\MetalRate::latestRate('Gold', '24K');
+        $this->assertGreaterThan(12000, $gold24);
+
+        $silver = \App\Models\MetalRate::latestRate('Silver', '999');
+        $this->assertGreaterThan(150, $silver);
+    }
 }
 

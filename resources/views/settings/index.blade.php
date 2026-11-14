@@ -59,8 +59,16 @@
 
             <!-- Defaults & Configuration -->
             <div class="border-t border-slate-100 pt-4 mt-2">
-                <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">POS & Pricing Defaults</h3>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">POS, City Market & Pricing Defaults</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Live Rate City</label>
+                        <select name="default_rate_city" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold">
+                            @foreach(\App\Services\LiveMetalRateService::CITIES as $cSlug => $cName)
+                                <option value="{{ $cSlug }}" {{ ($settings['default_rate_city'] ?? 'guwahati') === $cSlug ? 'selected' : '' }}>{{ $cName }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div>
                         <label class="block font-medium text-slate-600 mb-1">Default Making Type</label>
                         <select name="default_making_type" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs">
@@ -93,3 +101,4 @@
     </div>
 </div>
 @endsection
+

@@ -8,6 +8,7 @@ use App\Models\DiamondRateConfig;
 use App\Models\MetalRate;
 use App\Services\AuditService;
 use App\Services\JewelleryPriceCalculator;
+use App\Services\LiveMetalRateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -30,7 +31,10 @@ class MetalRateController extends Controller
             'Platinum 950' => MetalRate::latestRate('Platinum', '950'),
         ];
 
-        return view('rates.index', compact('rates', 'branches', 'diamondConfigs', 'currentRates'));
+        $cities = LiveMetalRateService::CITIES;
+        $selectedCity = request('city', 'guwahati');
+
+        return view('rates.index', compact('rates', 'branches', 'diamondConfigs', 'currentRates', 'cities', 'selectedCity'));
     }
 
     public function store(Request $request)
@@ -114,70 +118,14 @@ class MetalRateController extends Controller
     public function syncLiveRates(Request $request)
     {
         try {
-            // Fetch live spot gold and silver prices + USD/INR exchange rate
-            $goldRes = Http::timeout(6)->get('https://api.gold-api.com/price/XAU');
-            $silverRes = Http::timeout(6)->get('https://api.gold-api.com/price/XAG');
-            $fxRes = Http::timeout(6)->get('https://open.er-api.com/v6/latest/USD');
-
-            if (!$goldRes->successful() || !$fxRes->successful()) {
-                throw new \Exception('Unable to reach live market spot feed');
-            }
-
-            $inrRate = (float) ($fxRes->json()['rates']['INR'] ?? 87.5);
-            $goldUsdPerOz = (float) $goldRes->json()['price'];
-            $silverUsdPerOz = $silverRes->successful() ? (float) $silverRes->json()['price'] : 32.5;
-
-            // 1 Troy Ounce = 31.1034768 grams
-            $gold24kPerGram = round(($goldUsdPerOz * $inrRate) / 31.1034768, 2);
-            $silver999PerGram = round(($silverUsdPerOz * $inrRate) / 31.1034768, 2);
-
+            $city = $request->input('city', 'guwahati');
             $branchId = $request->input('branch_id') ?: null;
-            $now = now();
 
-            // 1. Publish 24K Gold
-            MetalRate::create([
-                'branch_id' => $branchId,
-                'metal_type' => 'Gold',
-                'purity' => '24K',
-                'rate_per_gram' => $gold24kPerGram,
-                'effective_at' => $now,
-                'status' => 'approved',
-                'created_by' => Auth::id(),
-                'approved_by' => Auth::id(),
-                'notes' => 'Live Spot Market Feed (XAU/INR conversion)',
-            ]);
+            $result = LiveMetalRateService::sync($city, $branchId, Auth::id());
 
-            // 2. Mathematically derive 22K, 20K, 18K, 14K, 9K
-            foreach (['22K', '20K', '18K', '14K', '9K'] as $purity) {
-                MetalRate::create([
-                    'branch_id' => $branchId,
-                    'metal_type' => 'Gold',
-                    'purity' => $purity,
-                    'rate_per_gram' => JewelleryPriceCalculator::deriveRateFrom24K($gold24kPerGram, $purity),
-                    'effective_at' => $now,
-                    'status' => 'approved',
-                    'created_by' => Auth::id(),
-                    'approved_by' => Auth::id(),
-                    'notes' => 'Auto-calculated from Live 24K rate',
-                ]);
-            }
+            AuditService::log('MetalRates', 'sync_api', "Live rates synced for {$result['city']}: 24K @ ₹{$result['gold_24k']}/g, 22K @ ₹{$result['gold_22k']}/g, Silver @ ₹{$result['silver_999']}/g");
 
-            // 3. Publish Silver 999
-            MetalRate::create([
-                'branch_id' => $branchId,
-                'metal_type' => 'Silver',
-                'purity' => '999',
-                'rate_per_gram' => $silver999PerGram,
-                'effective_at' => $now,
-                'status' => 'approved',
-                'created_by' => Auth::id(),
-                'approved_by' => Auth::id(),
-                'notes' => 'Live Spot Market Feed (XAG/INR conversion)',
-            ]);
-
-            AuditService::log('MetalRates', 'sync_api', "Live rates synced: 24K @ ₹{$gold24kPerGram}/g, Silver @ ₹{$silver999PerGram}/g");
-
-            return back()->with('success', "Live market rates successfully updated: 24K Gold @ ₹" . number_format($gold24kPerGram, 2) . "/g, Silver 999 @ ₹" . number_format($silver999PerGram, 2) . "/g.");
+            return back()->with('success', "Live market rates successfully updated for {$result['city']}: 24K Gold @ ₹" . number_format($result['gold_24k'], 2) . "/g, 22K Gold @ ₹" . number_format($result['gold_22k'], 2) . "/g, Silver 999 @ ₹" . number_format($result['silver_999'], 2) . "/g.");
         } catch (\Throwable $e) {
             return back()->withErrors(['api' => 'Live market sync failed: ' . $e->getMessage()]);
         }

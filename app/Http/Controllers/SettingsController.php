@@ -19,6 +19,7 @@ class SettingsController extends Controller
             'gstin' => Setting::get('gstin', '27AABCS1429B1Z5'),
             'pan_number' => Setting::get('pan_number', 'ABCPS1234D'),
             'hallmark_center' => Setting::get('hallmark_center', 'BIS Mumbai Assaying & Hallmarking Center'),
+            'default_rate_city' => Setting::get('default_rate_city', 'guwahati'),
             'default_making_type' => Setting::get('default_making_type', 'per_gram'),
             'default_making_rate' => Setting::get('default_making_rate', '650'),
             'default_wastage_pct' => Setting::get('default_wastage_pct', '2.0'),
@@ -40,6 +41,7 @@ class SettingsController extends Controller
             'gstin' => 'nullable|string|max:30',
             'pan_number' => 'nullable|string|max:30',
             'hallmark_center' => 'nullable|string|max:120',
+            'default_rate_city' => 'nullable|string|max:50',
             'default_making_type' => 'nullable|string',
             'default_making_rate' => 'nullable|numeric|min:0',
             'default_wastage_pct' => 'nullable|numeric|min:0',
@@ -56,3 +58,4 @@ class SettingsController extends Controller
         return back()->with('success', 'Showroom settings & business profile updated successfully!');
     }
 }
+

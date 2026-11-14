@@ -10,14 +10,20 @@
             <h2 class="text-sm font-bold text-slate-900">Today's Live Showroom Board Rates</h2>
             <p class="text-xs text-slate-500 mt-0.5">Rates used across POS billing, jewellery valuation, and old gold exchange.</p>
         </div>
-        <div class="flex items-center gap-2">
-            <form action="{{ route('rates.sync') }}" method="POST">
-                @csrf
-                <button type="submit" class="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs flex items-center gap-1.5 transition">
-                    <span>⚡</span> Sync Live Market Rates (API)
-                </button>
-            </form>
-        </div>
+        <form action="{{ route('rates.sync') }}" method="POST" class="flex flex-wrap items-center gap-2">
+            @csrf
+            <div class="flex items-center bg-white border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs shadow-xs">
+                <span class="text-slate-500 mr-1.5">📍 Market Hub:</span>
+                <select name="city" class="bg-transparent font-semibold text-slate-800 focus:outline-none">
+                    @foreach($cities as $slug => $cName)
+                        <option value="{{ $slug }}" {{ ($selectedCity ?? 'guwahati') === $slug ? 'selected' : '' }}>{{ $cName }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit" class="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs flex items-center gap-1.5 transition">
+                <span>⚡</span> Sync Live Market Rates
+            </button>
+        </form>
     </div>
 
     <!-- Live Rate Cards -->
