@@ -221,5 +221,34 @@ class JewelleryErpTest extends TestCase
         $response->assertRedirect();
         $this->assertDatabaseMissing('inventory_items', ['id' => $itemId]);
     }
+
+    public function test_inventory_item_creation_with_empty_optional_fields(): void
+    {
+        $admin = User::where('email', 'admin@swarnaerp.in')->firstOrFail();
+        $this->actingAs($admin);
+
+        $product = \App\Models\Product::firstOrFail();
+        $branch = \App\Models\Branch::firstOrFail();
+
+        $response = $this->post(route('inventory.store'), [
+            'product_id' => $product->id,
+            'branch_id' => $branch->id,
+            'gross_weight' => 222,
+            'purity' => '22K',
+            'purchase_cost' => null,
+            'stone_weight' => null,
+            'diamond_weight' => null,
+            'huid' => null,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('inventory_items', [
+            'product_id' => $product->id,
+            'branch_id' => $branch->id,
+            'gross_weight' => 222,
+            'purchase_cost' => 0,
+            'status' => 'available',
+        ]);
+    }
 }
 

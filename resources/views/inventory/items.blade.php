@@ -40,7 +40,7 @@
                     <input type="text" name="huid" placeholder="HUID (6-char)" class="border border-slate-300 rounded-lg px-2.5 py-2">
                 </div>
                 <div class="grid grid-cols-3 gap-2">
-                    <input type="number" step="1" name="purchase_cost" placeholder="Cost ₹" class="border border-slate-300 rounded-lg px-2 py-2">
+                    <input type="number" step="1" name="purchase_cost" value="0" placeholder="Cost ₹" class="border border-slate-300 rounded-lg px-2 py-2">
                     <input type="number" step="1" name="stone_charge" value="0" placeholder="Stone ₹" class="border border-slate-300 rounded-lg px-2 py-2">
                     <input type="number" step="1" name="diamond_charge" value="0" placeholder="Diamond ₹" class="border border-slate-300 rounded-lg px-2 py-2">
                 </div>

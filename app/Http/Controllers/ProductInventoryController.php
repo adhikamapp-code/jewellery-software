@@ -54,7 +54,21 @@ class ProductInventoryController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $product = Product::create($data + ['gst_rate' => $data['gst_rate'] ?? 3.0, 'wastage_pct' => $data['wastage_pct'] ?? 0]);
+        $product = Product::create([
+            'sku' => $data['sku'],
+            'name' => $data['name'],
+            'category_id' => $data['category_id'],
+            'product_type' => $data['product_type'],
+            'metal_type' => $data['metal_type'],
+            'purity' => $data['purity'],
+            'making_charge_type' => $data['making_charge_type'],
+            'making_charge_value' => (float) $data['making_charge_value'],
+            'wastage_pct' => (float) ($data['wastage_pct'] ?? 0),
+            'gst_rate' => (float) ($data['gst_rate'] ?? 3.0),
+            'supplier_id' => $data['supplier_id'] ?? null,
+            'description' => $data['description'] ?? null,
+            'status' => 'active',
+        ]);
         AuditService::log('Products', 'create', "Created product {$product->sku} - {$product->name}", $product);
 
         return back()->with('success', 'Product master created.');
@@ -109,20 +123,39 @@ class ProductInventoryController extends Controller
         ]);
 
         $stoneWt = (float) ($data['stone_weight'] ?? 0);
-        $netWt = max(0, (float) $data['gross_weight'] - $stoneWt);
+        $diaWt = (float) ($data['diamond_weight'] ?? 0);
+        $grossWt = (float) $data['gross_weight'];
+        $netWt = max(0, $grossWt - $stoneWt);
+        $purchaseCost = (float) ($data['purchase_cost'] ?? 0);
+        $stoneCharge = (float) ($data['stone_charge'] ?? 0);
+        $diamondCharge = (float) ($data['diamond_charge'] ?? 0);
+        $hallmarkCharge = (float) ($data['hallmark_charge'] ?? 45);
+
         $nextNum = (InventoryItem::max('id') ?? 0) + 1;
         $itemCode = 'JW-' . str_pad($nextNum, 5, '0', STR_PAD_LEFT);
         $barcode = '8901000' . str_pad($nextNum, 5, '0', STR_PAD_LEFT);
 
-        $item = InventoryItem::create(array_merge($data, [
+        $item = InventoryItem::create([
+            'product_id' => $data['product_id'],
+            'branch_id' => $data['branch_id'],
+            'counter_id' => $data['counter_id'] ?? null,
+            'supplier_id' => $data['supplier_id'] ?? null,
             'item_code' => $itemCode,
             'barcode' => $barcode,
+            'gross_weight' => round($grossWt, 3),
+            'stone_weight' => round($stoneWt, 3),
+            'diamond_weight' => round($diaWt, 3),
             'net_weight' => round($netWt, 3),
-            'stone_weight' => $stoneWt,
-            'diamond_weight' => $data['diamond_weight'] ?? 0,
-            'hallmark_charge' => $data['hallmark_charge'] ?? 45,
+            'purity' => $data['purity'],
+            'huid' => !empty($data['huid']) ? $data['huid'] : null,
+            'hallmark_center' => $data['hallmark_center'] ?? null,
+            'hallmark_charge' => $hallmarkCharge,
+            'purchase_cost' => $purchaseCost,
+            'stone_charge' => $stoneCharge,
+            'diamond_charge' => $diamondCharge,
+            'other_charge' => 0,
             'status' => 'available',
-        ]));
+        ]);
 
         StockMovement::create([
             'inventory_item_id' => $item->id,
