@@ -125,13 +125,18 @@
                                 <td class="px-3 py-2 text-center">
                                     <span class="px-2 py-0.5 text-xs rounded-full {{ $r->status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">{{ ucfirst($r->status) }}</span>
                                 </td>
-                                <td class="px-3 py-2 text-right">
+                                <td class="px-3 py-2 text-right space-x-1 whitespace-nowrap">
                                     @if($r->status === 'pending')
                                         <form action="{{ route('rates.approve', $r) }}" method="POST" class="inline">
                                             @csrf
-                                            <button class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded">Approve</button>
+                                            <button class="text-xs bg-emerald-600 text-white px-2 py-0.5 rounded hover:bg-emerald-700">Approve</button>
                                         </form>
                                     @endif
+                                    <form action="{{ route('rates.destroy', $r) }}" method="POST" class="inline" onsubmit="return confirm('Delete this rate entry ({{ $r->metal_type }} {{ $r->purity }} @ ₹{{ $r->rate_per_gram }})?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-xs bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white px-2 py-0.5 rounded transition">Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach

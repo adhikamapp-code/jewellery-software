@@ -28,6 +28,7 @@ Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
     Route::post('/rates', [MetalRateController::class, 'store'])->name('rates.store');
     Route::post('/rates/sync', [MetalRateController::class, 'syncLiveRates'])->name('rates.sync');
     Route::post('/rates/{metalRate}/approve', [MetalRateController::class, 'approve'])->name('rates.approve');
+    Route::delete('/rates/{metalRate}', [MetalRateController::class, 'destroy'])->name('rates.destroy');
 
     // Modules 2, 3, 13, 14, 15: Products, Inventory, Labels, Stones, Hallmarking
     Route::get('/products', [ProductInventoryController::class, 'products'])->name('products.index');

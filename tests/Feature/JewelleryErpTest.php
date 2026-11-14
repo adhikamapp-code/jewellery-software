@@ -182,5 +182,18 @@ class JewelleryErpTest extends TestCase
         $response = $this->post(route('rates.sync'));
         $response->assertRedirect();
     }
+
+    public function test_rate_deletion(): void
+    {
+        $admin = User::where('email', 'admin@swarnaerp.in')->firstOrFail();
+        $this->actingAs($admin);
+
+        $rate = \App\Models\MetalRate::firstOrFail();
+        $rateId = $rate->id;
+
+        $response = $this->delete(route('rates.destroy', $rate));
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('metal_rates', ['id' => $rateId]);
+    }
 }
 

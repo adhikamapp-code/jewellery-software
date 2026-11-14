@@ -102,6 +102,15 @@ class MetalRateController extends Controller
         return back()->with('success', 'Rate approved.');
     }
 
+    public function destroy(MetalRate $metalRate)
+    {
+        $info = "{$metalRate->metal_type} {$metalRate->purity} @ ₹{$metalRate->rate_per_gram}";
+        $metalRate->delete();
+        AuditService::log('MetalRates', 'delete', "Deleted rate {$info} (#{$metalRate->id})");
+
+        return back()->with('success', "Rate entry for {$info} deleted.");
+    }
+
     public function syncLiveRates(Request $request)
     {
         try {
