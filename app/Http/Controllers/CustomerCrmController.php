@@ -20,14 +20,64 @@ class CustomerCrmController extends Controller
             ->latest()
             ->paginate(20);
 
-        $upcomingBirthdays = Customer::whereNotNull('dob')
-            ->whereMonth('dob', now()->month)
-            ->get();
+        $window = $request->get('window', '7days'); // today, 7days, 15days, 30days, this_month
+        $eventType = $request->get('event_type', 'all'); // all, birthday, anniversary
+
+        // Collect upcoming events with metadata
+        $eventsList = collect();
+
+        if (in_array($eventType, ['all', 'birthday'])) {
+            $birthdays = Customer::getUpcomingEvents('birthday', $window);
+            foreach ($birthdays as $c) {
+                $days = $c->daysUntilEvent('birthday');
+                $nextDate = $c->nextEventDate('birthday');
+                $badge = $days === 0 ? 'Today!' : ($days === 1 ? 'Tomorrow (1 day)' : "In {$days} days");
+                $eventsList->push([
+                    'customer' => $c,
+                    'type' => 'birthday',
+                    'icon' => '🎂',
+                    'event_name' => 'Birthday',
+                    'date' => $c->dob,
+                    'next_date' => $nextDate,
+                    'days_until' => $days,
+                    'badge' => $badge,
+                ]);
+            }
+        }
+
+        if (in_array($eventType, ['all', 'anniversary'])) {
+            $anniversaries = Customer::getUpcomingEvents('anniversary', $window);
+            foreach ($anniversaries as $c) {
+                $days = $c->daysUntilEvent('anniversary');
+                $nextDate = $c->nextEventDate('anniversary');
+                $badge = $days === 0 ? 'Today!' : ($days === 1 ? 'Tomorrow (1 day)' : "In {$days} days");
+                $eventsList->push([
+                    'customer' => $c,
+                    'type' => 'anniversary',
+                    'icon' => '💍',
+                    'event_name' => 'Anniversary',
+                    'date' => $c->anniversary,
+                    'next_date' => $nextDate,
+                    'days_until' => $days,
+                    'badge' => $badge,
+                ]);
+            }
+        }
+
+        $upcomingEvents = $eventsList->sortBy('days_until')->values();
+
+        $stats = [
+            'today' => Customer::getUpcomingEvents('birthday', 'today')->count() + Customer::getUpcomingEvents('anniversary', 'today')->count(),
+            'seven_days' => Customer::getUpcomingEvents('birthday', '7days')->count() + Customer::getUpcomingEvents('anniversary', '7days')->count(),
+            'fifteen_days' => Customer::getUpcomingEvents('birthday', '15days')->count() + Customer::getUpcomingEvents('anniversary', '15days')->count(),
+            'one_month' => Customer::getUpcomingEvents('birthday', '30days')->count() + Customer::getUpcomingEvents('anniversary', '30days')->count(),
+            'this_month' => Customer::getUpcomingEvents('birthday', 'month')->count() + Customer::getUpcomingEvents('anniversary', 'month')->count(),
+        ];
 
         $campaigns = MarketingCampaign::latest()->take(10)->get();
         $feedbacks = CustomerFeedback::with(['customer', 'invoice'])->latest()->take(10)->get();
 
-        return view('crm.index', compact('customers', 'upcomingBirthdays', 'campaigns', 'feedbacks'));
+        return view('crm.index', compact('customers', 'upcomingEvents', 'stats', 'window', 'eventType', 'campaigns', 'feedbacks'));
     }
 
     public function store(Request $request)
@@ -96,10 +146,57 @@ class CustomerCrmController extends Controller
             'message' => 'required|string',
         ]);
 
-        $audienceCount = Customer::when($data['target_group'] !== 'all', fn ($q) => $q->where('group_tier', $data['target_group']))->count();
-        MarketingCampaign::create($data + ['status' => 'sent', 'sent_count' => $audienceCount]);
+        $target = $data['target_group'];
+        $audienceCount = 0;
 
-        return back()->with('success', "Campaign '{$data['title']}' dispatched to {$audienceCount} customers.");
+        if (str_starts_with($target, 'birthday_')) {
+            $win = substr($target, strlen('birthday_'));
+            $matching = Customer::getUpcomingEvents('birthday', $win);
+            $audienceCount = $matching->count();
+        } elseif (str_starts_with($target, 'anniversary_')) {
+            $win = substr($target, strlen('anniversary_'));
+            $matching = Customer::getUpcomingEvents('anniversary', $win);
+            $audienceCount = $matching->count();
+        } elseif ($target === 'all') {
+            $audienceCount = Customer::count();
+        } else {
+            $audienceCount = Customer::where('group_tier', $target)->count();
+        }
+
+        $campaign = MarketingCampaign::create($data + [
+            'status' => 'sent',
+            'sent_count' => $audienceCount,
+        ]);
+
+        AuditService::log('CRM', 'campaign', "Dispatched campaign '{$data['title']}' to {$audienceCount} customers via {$data['channel']}", $campaign);
+
+        return back()->with('success', "Campaign '{$data['title']}' dispatched to {$audienceCount} target customers via {$data['channel']}.");
+    }
+
+    public function sendDirectGreeting(Request $request)
+    {
+        $data = $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'occasion' => 'required|string',
+            'channel' => 'required|in:whatsapp,sms,email',
+            'message' => 'required|string',
+        ]);
+
+        $customer = Customer::findOrFail($data['customer_id']);
+
+        $campaign = MarketingCampaign::create([
+            'title' => "Direct {$data['occasion']} Greeting — {$customer->name}",
+            'channel' => $data['channel'],
+            'occasion' => strtolower($data['occasion']),
+            'target_group' => $customer->group_tier,
+            'message' => $data['message'],
+            'status' => 'sent',
+            'sent_count' => 1,
+        ]);
+
+        AuditService::log('CRM', 'direct_greeting', "Sent {$data['occasion']} greeting to {$customer->name} ({$customer->phone}) via {$data['channel']}", $campaign);
+
+        return back()->with('success', "Greeting sent to {$customer->name} via {$data['channel']}!");
     }
 
     public function destroyCustomer(Customer $customer)

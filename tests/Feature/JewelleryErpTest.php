@@ -454,5 +454,50 @@ class JewelleryErpTest extends TestCase
         $silver = \App\Models\MetalRate::latestRate('Silver', '999');
         $this->assertGreaterThan(150, $silver);
     }
+
+    public function test_crm_birthday_and_anniversary_campaign_timing_windows(): void
+    {
+        $admin = User::where('email', 'admin@swarnaerp.in')->firstOrFail();
+        $this->actingAs($admin);
+
+        // Create a customer with birthday in 3 days and anniversary in 20 days
+        $cust = Customer::create([
+            'customer_code' => 'CUST-BDAY',
+            'name' => 'Kavita Verma',
+            'phone' => '9811122334',
+            'dob' => now()->addDays(3)->subYears(28),
+            'anniversary' => now()->addDays(20)->subYears(4),
+            'group_tier' => 'vip',
+        ]);
+
+        // Test CRM page filters: 7 days window
+        $res = $this->get('/customers?window=7days');
+        $res->assertStatus(200);
+        $res->assertSee('Kavita Verma');
+
+        // Test Launching Campaign targeted to Birthday in Next 7 Days
+        $campRes = $this->post(route('crm.campaigns.store'), [
+            'title' => 'Special 7-Day Birthday Blast',
+            'channel' => 'whatsapp',
+            'occasion' => 'birthday',
+            'target_group' => 'birthday_7days',
+            'message' => 'Happy Birthday from our showroom!',
+        ]);
+        $campRes->assertRedirect();
+        $this->assertDatabaseHas('marketing_campaigns', [
+            'title' => 'Special 7-Day Birthday Blast',
+            'target_group' => 'birthday_7days',
+            'channel' => 'whatsapp',
+        ]);
+
+        // Test Direct Greeting
+        $directRes = $this->post(route('crm.campaigns.direct'), [
+            'customer_id' => $cust->id,
+            'occasion' => 'birthday',
+            'channel' => 'whatsapp',
+            'message' => 'Happy Birthday Kavita!',
+        ]);
+        $directRes->assertRedirect();
+    }
 }
 

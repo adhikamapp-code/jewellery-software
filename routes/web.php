@@ -65,6 +65,7 @@ Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
     Route::delete('/customers/{customer}', [CustomerCrmController::class, 'destroyCustomer'])->name('crm.customers.destroy');
     Route::post('/customers/{customer}/loyalty', [CustomerCrmController::class, 'adjustLoyalty'])->name('crm.loyalty');
     Route::post('/campaigns', [CustomerCrmController::class, 'storeCampaign'])->name('crm.campaigns.store');
+    Route::post('/campaigns/direct-greeting', [CustomerCrmController::class, 'sendDirectGreeting'])->name('crm.campaigns.direct');
     Route::delete('/campaigns/{campaign}', [CustomerCrmController::class, 'destroyCampaign'])->name('crm.campaigns.destroy');
 
     // Module 8: Old Gold Exchange & Purchase
