@@ -195,5 +195,31 @@ class JewelleryErpTest extends TestCase
         $response->assertRedirect();
         $this->assertDatabaseMissing('metal_rates', ['id' => $rateId]);
     }
+
+    public function test_product_deletion(): void
+    {
+        $admin = User::where('email', 'admin@swarnaerp.in')->firstOrFail();
+        $this->actingAs($admin);
+
+        $product = \App\Models\Product::firstOrFail();
+        $prodId = $product->id;
+
+        $response = $this->delete(route('products.destroy', $product));
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('products', ['id' => $prodId]);
+    }
+
+    public function test_inventory_item_deletion(): void
+    {
+        $admin = User::where('email', 'admin@swarnaerp.in')->firstOrFail();
+        $this->actingAs($admin);
+
+        $item = \App\Models\InventoryItem::firstOrFail();
+        $itemId = $item->id;
+
+        $response = $this->delete(route('inventory.destroy', $item));
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('inventory_items', ['id' => $itemId]);
+    }
 }
 

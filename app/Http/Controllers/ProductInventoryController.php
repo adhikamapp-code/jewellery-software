@@ -60,6 +60,15 @@ class ProductInventoryController extends Controller
         return back()->with('success', 'Product master created.');
     }
 
+    public function destroyProduct(Product $product)
+    {
+        $info = "{$product->sku} ({$product->name})";
+        $product->delete();
+        AuditService::log('Products', 'delete', "Deleted product {$info} (#{$product->id})");
+
+        return back()->with('success', "Product {$info} deleted successfully.");
+    }
+
     public function inventory(Request $request)
     {
         $items = InventoryItem::with(['product', 'branch', 'counter', 'supplier'])
@@ -127,6 +136,15 @@ class ProductInventoryController extends Controller
         AuditService::log('Inventory', 'create', "Registered piece {$itemCode} ({$item->net_weight}g)", $item);
 
         return back()->with('success', "Piece {$itemCode} registered with barcode {$barcode}.");
+    }
+
+    public function destroyItem(InventoryItem $inventoryItem)
+    {
+        $info = "{$inventoryItem->item_code} ({$inventoryItem->net_weight}g)";
+        $inventoryItem->delete();
+        AuditService::log('Inventory', 'delete', "Deleted inventory piece {$info} (#{$inventoryItem->id})");
+
+        return back()->with('success', "Inventory piece {$info} deleted.");
     }
 
     public function transferStock(Request $request)

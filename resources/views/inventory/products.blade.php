@@ -65,6 +65,7 @@
                         <th class="px-3 py-2 text-left">Metal / Purity</th>
                         <th class="px-3 py-2 text-left">Making Charge</th>
                         <th class="px-3 py-2 text-center">In Stock</th>
+                        <th class="px-3 py-2 text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -78,6 +79,13 @@
                             <td class="px-3 py-2 text-xs">{{ $p->metal_type }} <span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">{{ $p->purity }}</span></td>
                             <td class="px-3 py-2 text-xs">{{ $p->making_charge_value }} ({{ $p->making_charge_type }}) · W: {{ $p->wastage_pct }}%</td>
                             <td class="px-3 py-2 text-center font-bold {{ $p->available_count > 0 ? 'text-emerald-700' : 'text-rose-600' }}">{{ $p->available_count }}</td>
+                            <td class="px-3 py-2 text-right whitespace-nowrap">
+                                <form action="{{ route('products.destroy', $p) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete product {{ $p->sku }} ({{ $p->name }})?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-xs bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white px-2 py-0.5 rounded transition">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

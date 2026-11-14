@@ -33,8 +33,10 @@ Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
     // Modules 2, 3, 13, 14, 15: Products, Inventory, Labels, Stones, Hallmarking
     Route::get('/products', [ProductInventoryController::class, 'products'])->name('products.index');
     Route::post('/products', [ProductInventoryController::class, 'storeProduct'])->name('products.store');
+    Route::delete('/products/{product}', [ProductInventoryController::class, 'destroyProduct'])->name('products.destroy');
     Route::get('/inventory', [ProductInventoryController::class, 'inventory'])->name('inventory.index');
     Route::post('/inventory', [ProductInventoryController::class, 'storeItem'])->name('inventory.store');
+    Route::delete('/inventory/{inventoryItem}', [ProductInventoryController::class, 'destroyItem'])->name('inventory.destroy');
     Route::post('/inventory/transfer', [ProductInventoryController::class, 'transferStock'])->name('inventory.transfer');
     Route::post('/inventory/adjust', [ProductInventoryController::class, 'adjustStock'])->name('inventory.adjust');
     Route::get('/inventory/labels', [ProductInventoryController::class, 'labels'])->name('inventory.labels');

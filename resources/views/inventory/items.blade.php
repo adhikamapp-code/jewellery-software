@@ -140,6 +140,7 @@
                         <th class="px-3 py-2 text-right">Gross / Net Wt</th>
                         <th class="px-3 py-2 text-left">HUID</th>
                         <th class="px-3 py-2 text-center">Status</th>
+                        <th class="px-3 py-2 text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -161,6 +162,13 @@
                             <td class="px-3 py-2 font-mono text-xs">{{ $it->huid ?? '-' }}</td>
                             <td class="px-3 py-2 text-center">
                                 <span class="px-2 py-0.5 text-xs rounded-full {{ $it->status === 'available' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700' }}">{{ ucfirst($it->status) }}</span>
+                            </td>
+                            <td class="px-3 py-2 text-right whitespace-nowrap">
+                                <form action="{{ route('inventory.destroy', $it) }}" method="POST" class="inline" onsubmit="return confirm('Delete piece {{ $it->item_code }} ({{ $it->net_weight }}g)?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-xs bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white px-2 py-0.5 rounded transition">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach
