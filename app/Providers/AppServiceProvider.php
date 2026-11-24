@@ -26,13 +26,13 @@ class AppServiceProvider extends ServiceProvider
             $businessName = 'JewelERP';
             $tagline = 'Jewellery Suite';
 
-            if (Schema::hasTable('settings')) {
-                try {
+            try {
+                if (Schema::hasTable('settings')) {
                     $businessName = Setting::get('business_name', 'JewelERP') ?: 'JewelERP';
                     $tagline = Setting::get('tagline', 'Jewellery Suite') ?: 'Jewellery Suite';
-                } catch (\Throwable) {
-                    // fallback
                 }
+            } catch (\Throwable) {
+                // fallback if database is not reachable during build or before migration
             }
 
             $view->with('businessName', $businessName);
