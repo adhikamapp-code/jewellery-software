@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Setting;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,6 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->environment('production') || request()->header('x-forwarded-proto') === 'https' || str_starts_with(config('app.url'), 'https://')) {
+            URL::forceScheme('https');
+        }
         View::composer('*', function ($view) {
             $businessName = 'JewelERP';
             $tagline = 'Jewellery Suite';
