@@ -231,11 +231,11 @@
 
     <!-- Customers Directory -->
     <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <h2 class="text-base font-semibold text-slate-800">Customer Directory & Lifetime Value</h2>
-            <form method="GET" class="flex gap-2 text-xs">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Name or phone..." class="border border-slate-300 rounded-lg px-3 py-1.5">
-                <button class="bg-slate-800 text-white px-3 py-1.5 rounded-lg">Search</button>
+            <form method="GET" class="flex items-center gap-2 text-xs">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Name or phone..." class="border border-slate-300 rounded-lg px-3 py-1.5 flex-1 sm:w-44">
+                <button class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg whitespace-nowrap">Search</button>
             </form>
         </div>
         <div class="overflow-x-auto">

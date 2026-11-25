@@ -98,28 +98,30 @@
 
         <div class="bg-white rounded-xl border border-slate-200 p-5">
             <h3 class="text-sm font-semibold text-slate-800 mb-3">Supplier Ledger Summary</h3>
-            <table class="w-full text-xs">
-                <thead class="bg-slate-50 text-slate-500 uppercase">
-                    <tr><th class="px-2 py-2 text-left">Supplier</th><th class="px-2 py-2 text-left">Category / GSTIN</th><th class="px-2 py-2 text-right">Total Billed</th><th class="px-2 py-2 text-right">Outstanding</th><th class="px-2 py-2 text-right">Action</th></tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @foreach($suppliers as $s)
-                        <tr>
-                            <td class="px-2 py-2 font-semibold">{{ $s->name }}</td>
-                            <td class="px-2 py-2">{{ $s->category }} · {{ $s->gstin }}</td>
-                            <td class="px-2 py-2 text-right">₹{{ number_format($s->purchase_invoices_sum_total_amount ?? 0, 0) }}</td>
-                            <td class="px-2 py-2 text-right text-rose-600 font-semibold">₹{{ number_format(($s->purchase_invoices_sum_total_amount ?? 0) - ($s->purchase_invoices_sum_paid_amount ?? 0), 0) }}</td>
-                            <td class="px-2 py-2 text-right whitespace-nowrap">
-                                <form action="{{ route('suppliers.destroy', $s) }}" method="POST" class="inline" onsubmit="return confirm('Delete supplier {{ $s->name }}?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="text-[11px] text-rose-600 hover:underline">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs">
+                    <thead class="bg-slate-50 text-slate-500 uppercase">
+                        <tr><th class="px-2 py-2 text-left">Supplier</th><th class="px-2 py-2 text-left">Category / GSTIN</th><th class="px-2 py-2 text-right">Total Billed</th><th class="px-2 py-2 text-right">Outstanding</th><th class="px-2 py-2 text-right">Action</th></tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach($suppliers as $s)
+                            <tr>
+                                <td class="px-2 py-2 font-semibold">{{ $s->name }}</td>
+                                <td class="px-2 py-2">{{ $s->category }} · {{ $s->gstin }}</td>
+                                <td class="px-2 py-2 text-right">₹{{ number_format($s->purchase_invoices_sum_total_amount ?? 0, 0) }}</td>
+                                <td class="px-2 py-2 text-right text-rose-600 font-semibold">₹{{ number_format(($s->purchase_invoices_sum_total_amount ?? 0) - ($s->purchase_invoices_sum_paid_amount ?? 0), 0) }}</td>
+                                <td class="px-2 py-2 text-right whitespace-nowrap">
+                                    <form action="{{ route('suppliers.destroy', $s) }}" method="POST" class="inline" onsubmit="return confirm('Delete supplier {{ $s->name }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="text-[11px] text-rose-600 hover:underline">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

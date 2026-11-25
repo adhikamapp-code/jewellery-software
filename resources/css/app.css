@@ -7,6 +7,18 @@
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Touch device scrolling & safe area support */
+html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+}
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .safe-area-bottom {
+        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    }
+}
+
 @media print {
     .no-print {
         display: none !important;

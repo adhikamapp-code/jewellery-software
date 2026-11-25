@@ -49,11 +49,11 @@
     </div>
 
     <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <h2 class="text-base font-semibold text-slate-800">Product Catalog</h2>
-            <form method="GET" class="flex gap-2">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search SKU or name..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs">
-                <button class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs">Filter</button>
+            <form method="GET" class="flex items-center gap-2">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search SKU or name..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs flex-1 sm:w-44">
+                <button class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap">Filter</button>
             </form>
         </div>
         <div class="overflow-x-auto">

@@ -72,65 +72,71 @@
         <div class="lg:col-span-2 space-y-6">
             <div class="bg-white rounded-xl border border-slate-200 p-5">
                 <h2 class="text-base font-semibold text-slate-800 mb-3">Cashbook, Bankbook & Trial Balance Accounts</h2>
-                <table class="w-full text-xs">
-                    <thead class="bg-slate-50 text-slate-500 uppercase"><tr><th class="px-3 py-2 text-left">Code</th><th class="px-3 py-2 text-left">Account Name</th><th class="px-3 py-2 text-left">Type</th><th class="px-3 py-2 text-right">Balance</th></tr></thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @foreach($accounts as $acc)
-                            <tr>
-                                <td class="px-3 py-2 font-mono">{{ $acc->code }}</td>
-                                <td class="px-3 py-2 font-semibold">{{ $acc->name }}</td>
-                                <td class="px-3 py-2 uppercase text-slate-500">{{ $acc->type }}</td>
-                                <td class="px-3 py-2 text-right font-bold">₹{{ number_format($acc->balance, 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-slate-50 text-slate-500 uppercase"><tr><th class="px-3 py-2 text-left">Code</th><th class="px-3 py-2 text-left">Account Name</th><th class="px-3 py-2 text-left">Type</th><th class="px-3 py-2 text-right">Balance</th></tr></thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach($accounts as $acc)
+                                <tr>
+                                    <td class="px-3 py-2 font-mono">{{ $acc->code }}</td>
+                                    <td class="px-3 py-2 font-semibold">{{ $acc->name }}</td>
+                                    <td class="px-3 py-2 uppercase text-slate-500">{{ $acc->type }}</td>
+                                    <td class="px-3 py-2 text-right font-bold">₹{{ number_format($acc->balance, 2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="bg-white rounded-xl border border-slate-200 p-5">
                 <h2 class="text-base font-semibold text-slate-800 mb-3">Recent Financial Vouchers</h2>
-                <table class="w-full text-xs">
-                    <thead class="bg-slate-50 text-slate-500 uppercase"><tr><th class="px-2 py-2 text-left">Voucher #</th><th class="px-2 py-2 text-left">Type</th><th class="px-2 py-2 text-left">Narration</th><th class="px-2 py-2 text-right">Amount</th><th class="px-2 py-2 text-right">Action</th></tr></thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @foreach($vouchers as $v)
-                            <tr>
-                                <td class="px-2 py-2 font-bold">{{ $v->voucher_no }}</td>
-                                <td class="px-2 py-2 uppercase">{{ $v->type }}</td>
-                                <td class="px-2 py-2">{{ $v->narration }}</td>
-                                <td class="px-2 py-2 text-right font-semibold">₹{{ number_format($v->amount, 2) }}</td>
-                                <td class="px-2 py-2 text-right whitespace-nowrap">
-                                    <form action="{{ route('finance.vouchers.destroy', $v) }}" method="POST" class="inline" onsubmit="return confirm('Delete voucher {{ $v->voucher_no }}?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="text-rose-600 hover:underline">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-slate-50 text-slate-500 uppercase"><tr><th class="px-2 py-2 text-left">Voucher #</th><th class="px-2 py-2 text-left">Type</th><th class="px-2 py-2 text-left">Narration</th><th class="px-2 py-2 text-right">Amount</th><th class="px-2 py-2 text-right">Action</th></tr></thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach($vouchers as $v)
+                                <tr>
+                                    <td class="px-2 py-2 font-bold">{{ $v->voucher_no }}</td>
+                                    <td class="px-2 py-2 uppercase">{{ $v->type }}</td>
+                                    <td class="px-2 py-2">{{ $v->narration }}</td>
+                                    <td class="px-2 py-2 text-right font-semibold">₹{{ number_format($v->amount, 2) }}</td>
+                                    <td class="px-2 py-2 text-right whitespace-nowrap">
+                                        <form action="{{ route('finance.vouchers.destroy', $v) }}" method="POST" class="inline" onsubmit="return confirm('Delete voucher {{ $v->voucher_no }}?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="text-rose-600 hover:underline">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
                 <h3 class="text-sm font-semibold text-slate-800 mt-6 mb-2">Recent Recorded Expenses</h3>
-                <table class="w-full text-xs">
-                    <thead class="bg-slate-50 text-slate-500 uppercase"><tr><th class="px-2 py-2 text-left">Date</th><th class="px-2 py-2 text-left">Category</th><th class="px-2 py-2 text-left">Description</th><th class="px-2 py-2 text-right">Amount</th><th class="px-2 py-2 text-right">Action</th></tr></thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @foreach($expenses as $e)
-                            <tr>
-                                <td class="px-2 py-2 text-slate-500">{{ $e->expense_date->format('d M Y') }}</td>
-                                <td class="px-2 py-2 font-medium">{{ $e->category }} ({{ $e->paid_via }})</td>
-                                <td class="px-2 py-2">{{ $e->description }}</td>
-                                <td class="px-2 py-2 text-right font-semibold text-rose-600">₹{{ number_format($e->amount, 2) }}</td>
-                                <td class="px-2 py-2 text-right whitespace-nowrap">
-                                    <form action="{{ route('finance.expenses.destroy', $e) }}" method="POST" class="inline" onsubmit="return confirm('Delete expense {{ $e->category }}?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="text-rose-600 hover:underline">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead class="bg-slate-50 text-slate-500 uppercase"><tr><th class="px-2 py-2 text-left">Date</th><th class="px-2 py-2 text-left">Category</th><th class="px-2 py-2 text-left">Description</th><th class="px-2 py-2 text-right">Amount</th><th class="px-2 py-2 text-right">Action</th></tr></thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach($expenses as $e)
+                                <tr>
+                                    <td class="px-2 py-2 text-slate-500">{{ $e->expense_date->format('d M Y') }}</td>
+                                    <td class="px-2 py-2 font-medium">{{ $e->category }} ({{ $e->paid_via }})</td>
+                                    <td class="px-2 py-2">{{ $e->description }}</td>
+                                    <td class="px-2 py-2 text-right font-semibold text-rose-600">₹{{ number_format($e->amount, 2) }}</td>
+                                    <td class="px-2 py-2 text-right whitespace-nowrap">
+                                        <form action="{{ route('finance.expenses.destroy', $e) }}" method="POST" class="inline" onsubmit="return confirm('Delete expense {{ $e->category }}?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="text-rose-600 hover:underline">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

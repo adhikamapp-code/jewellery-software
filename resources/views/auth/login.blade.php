@@ -31,19 +31,19 @@
             @csrf
             <div>
                 <label for="email" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email Address</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="email" placeholder="you@jewelerp.in" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="email" placeholder="you@jewelerp.in" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
             </div>
             <div>
                 <label for="password" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Password</label>
-                <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="Enter your password" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="Enter your password" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
             </div>
             <div class="flex items-center justify-between text-xs text-slate-600">
-                <label class="flex items-center gap-2 cursor-pointer">
+                <label class="flex items-center gap-2 cursor-pointer py-1">
                     <input type="checkbox" name="remember" value="1" class="rounded border-slate-300 text-amber-600 focus:ring-amber-500">
                     <span>Keep me signed in</span>
                 </label>
             </div>
-            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-lg text-sm transition">Sign In</button>
+            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold py-2.5 rounded-lg text-sm transition">Sign In</button>
         </form>
     </div>
 </div>

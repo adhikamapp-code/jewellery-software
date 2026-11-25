@@ -82,13 +82,17 @@
 
     <!-- Charts -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
             <h2 class="text-sm font-semibold text-slate-800 mb-3">24K Gold Rate Movement (₹/g)</h2>
-            <canvas id="rateChart" height="140"></canvas>
+            <div class="relative h-60 sm:h-72 w-full">
+                <canvas id="rateChart"></canvas>
+            </div>
         </div>
-        <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
             <h2 class="text-sm font-semibold text-slate-800 mb-3">Sales vs Purchase Overview (₹)</h2>
-            <canvas id="salesPurchaseChart" height="140"></canvas>
+            <div class="relative h-60 sm:h-72 w-full">
+                <canvas id="salesPurchaseChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -174,7 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     tension: 0.35
                 }]
             },
-            options: { plugins: { legend: { display: false } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
         });
     }
 
@@ -191,7 +199,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     borderRadius: 6
                 }]
             },
-            options: { plugins: { legend: { display: false } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
         });
     }
 });

@@ -25,7 +25,7 @@
             <!-- Quick Pick Grid -->
             <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-52 overflow-y-auto">
                 <template x-for="item in filteredCatalog()" :key="item.id">
-                    <button type="button" @click="addItem(item)" class="text-left p-2.5 rounded-lg border border-slate-200 hover:border-amber-400 hover:bg-amber-50/50 transition">
+                    <button type="button" @click="addItem(item)" class="text-left p-2.5 rounded-lg border border-slate-200 hover:border-amber-400 hover:bg-amber-50/50 active:bg-amber-100 transition min-h-[44px]">
                         <div class="flex justify-between items-start gap-1">
                             <span class="text-xs font-bold text-slate-800 truncate" x-text="item.name"></span>
                             <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold" x-text="item.purity"></span>
@@ -116,7 +116,7 @@
     </div>
 
     <!-- Right Column: Customer, Adjustments, Payment & Checkout -->
-    <div class="bg-white rounded-xl border border-slate-200 p-5 space-y-4 h-fit">
+    <div id="checkout-section" class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 space-y-4 h-fit xl:sticky xl:top-20">
         <h2 class="text-base font-semibold text-slate-800 border-b border-slate-100 pb-2">Checkout & Settlement</h2>
 
         <form action="{{ route('pos.store') }}" method="POST" @submit="prepareSubmit($event)">
@@ -221,6 +221,27 @@
                 </button>
             </div>
         </form>
+    </div>
+
+    <!-- Floating Mobile Bottom Checkout Bar (mobile & tablet < xl) -->
+    <div x-show="cart.length > 0"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="transform translate-y-full opacity-0"
+         x-transition:enter-end="transform translate-y-0 opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="transform translate-y-0 opacity-100"
+         x-transition:leave-end="transform translate-y-full opacity-0"
+         class="xl:hidden fixed bottom-14 inset-x-0 z-30 px-4 py-2.5 bg-slate-900/95 text-white backdrop-blur shadow-2xl border-t border-slate-800 flex items-center justify-between gap-3 safe-area-bottom"
+         style="display: none;">
+        <div>
+            <div class="text-[11px] text-amber-400 font-medium"><span x-text="cart.length"></span> item(s) in cart</div>
+            <div class="text-base font-bold text-white">₹<span x-text="totals().grandTotal.toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})"></span></div>
+        </div>
+        <a href="#checkout-section"
+           class="bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs flex items-center gap-1.5 shadow-md">
+            <span>Pay & Settle</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </a>
     </div>
 </div>
 @endsection
